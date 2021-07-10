@@ -1,32 +1,51 @@
+/*
+ *  UCF COP3330 Summer 2021 Assignment 4 Solution
+ *  Copyright 2021 Sriharsha Aitharaju
+ */
 package ucf.assignments;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.BooleanStringConverter;
 import javafx.util.converter.LocalDateStringConverter;
+import org.w3c.dom.Text;
 
 
 import java.beans.SimpleBeanInfo;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class ListController implements Initializable
 {
@@ -49,6 +68,9 @@ public class ListController implements Initializable
     @FXML private Button enter;
     @FXML private Button addItemButton;
     @FXML private Button deleteItemButton;
+    @FXML private Button exportList;
+    @FXML private Button importList;
+
     //@FXML private String title;
     // create a list view of ListManagers
     //@FXML
@@ -75,6 +97,8 @@ public class ListController implements Initializable
     ListModel model = new ListModel();
     // create a new list manager
     ListManager manager = new ListManager();
+    // create a new file manager
+    ManageFiles files = new ManageFiles();
 
 
     @Override
@@ -183,7 +207,7 @@ public class ListController implements Initializable
         {
             description = descriptionBox.getText();
 
-            Task t = new Task(description, dueDate.getValue(), isCompleted);
+            Task t = new Task(description, dueDate.getValue(), isCompleted.isSelected());
             descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
             dateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
             completed.setCellValueFactory(new PropertyValueFactory<>("isCompleted"));
@@ -201,7 +225,7 @@ public class ListController implements Initializable
             //add item using delete item function from the ListManager class
         if(event.getSource() == deleteItemButton)
         {
-            Task t = new Task(description, dueDate.getValue(), isCompleted);
+            Task t = new Task(description, dueDate.getValue(), isCompleted.isSelected());
             itemTable.setItems(manager.deleteItem(t));
             itemTable.getItems().removeAll(itemTable.getSelectionModel().getSelectedItem());
         }
@@ -212,52 +236,65 @@ public class ListController implements Initializable
     public void listDropdownClicked(javafx.event.ActionEvent event)
     {
         // If you clicked the dropdown button
-        // create a new observable list with the options, "all items", "completed", and "incomplete"
-        // create a new choice box with those options
-        // get the value of the choice that is clicked by the user
-        // if the value is all items, call the function displayAll()
-        // else if the value is only completed items, call the function displayCompleted()
-        // else call the function displayIncomplete()
-       // ObservableList<String> choices = FXCollections.observableArrayList("All Items", "Completed Items", "Incomplete Items");
-        //listDropdown.setItems(choices);
+        // check each item in the list Dropdown
+        // if the user selects all items
+            // set the table to show all items
+        // if the user selected only the completed items
+            // set the table to show only the completed items
+        // if the user selected only the incomplete items
+            // set the table to show only the incomplete items
         if(event.getSource() == listDropdown)
         {
-
-           /* listDropdown.valueProperty().addListener((obs, oldItem, newItem) -> {
-                label.textProperty().unbind();
-                if (newItem == null) {
-                    label.setText("");
-                } else {
-                    label.textProperty().bind(newItem.detailsProperty());
-                }
-            });
-            */
-           /* ObservableList<Task> all = manager.addAll();
-            ObservableList<Task> completed = manager.addCompleted();
-            ObservableList<Task> incomplete = manager.addIncomplete();*/
-            for(int i = 0; i < itemTable.getItems().size(); i++)
-            {
                 if (listDropdown.getSelectionModel().getSelectedItem() == "All Items") {
                     itemTable.setItems(manager.addAll());
                 } else if (listDropdown.getSelectionModel().getSelectedItem() == "Completed Items") {
-                    itemTable.setItems(manager.addIncomplete(itemTable.getItems().get(i)));
+                    itemTable.setItems(manager.addCompleted());
                 } else if (listDropdown.getSelectionModel().getSelectedItem() == "Incomplete Items") {
-                    itemTable.setItems(manager.addIncomplete(itemTable.getItems().get(i)));
+                    itemTable.setItems(manager.addIncomplete());
                 }
-            }
         }
 
     }
 
 
     @FXML
-    public void importListClicked(ActionEvent event)
-    {
+    public void importListClicked(ActionEvent event) throws IOException {
         // initialize the file chooser to open a new window showing a new stage
         // if the file is not null
         // if(file != null)
          // call the importList function from the ManageFiles class to import the list
+
+        /*
+        itemTable.setItems(data);
+        itemTable.getColumns().addAll(descriptionCol, dateCol, completed);
+
+        final VBox vbox = new VBox();
+        vbox.setSpacing(5);
+        vbox.setPadding(new Insets(10, 10, 10, 10));
+
+        BorderPane borderPane = new BorderPane();
+        borderPane.setCenter(itemTable);
+
+        vbox.getChildren().addAll(borderPane);
+
+        vbox.getChildren().add( new Label( "Select cells and press CTRL+C. Paste the data into Excel or Notepad"));
+
+        Scene scene = new Scene(vbox);
+
+        stage.setScene(scene);
+        stage.show();
+
+        // enable multi-selection
+        itemTable.getSelectionModel().setCellSelectionEnabled(true);
+        itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        // enable copy/paste
+        TableUtils.installCopyPasteHandler(itemTable);
+
+         */
     }
+
+
 
     @FXML
     public void exportListClicked(ActionEvent actionEvent)
@@ -268,6 +305,55 @@ public class ListController implements Initializable
         // else if the user clicks on the Ctrl key and selects multiple lists
             // if the user clicks export
                 // call the exportMultipleLists() from the ManageFiles class
+         Stage stage = new Stage();
+         exportList.setOnAction(new EventHandler() {
+
+             @Override
+             public void handle(Event event) {
+                 try {
+                     FileChooser chooser = new FileChooser();
+                     File file = chooser.showSaveDialog(stage);
+                     FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file(*.txt)" , " *.txt");
+                     chooser.getExtensionFilters().add(extFilter);
+
+                     if(file != null)
+                     {
+                         String fileName = file.getName();
+                         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
+
+                         System.out.println(">> fileExtension" + fileExtension);
+                         VBox vbox = new VBox(30);
+
+                         // set Alignment
+                         vbox.setAlignment(Pos.CENTER);
+
+                         // create a scene
+                         Scene scene = new Scene(vbox, 800, 500);
+
+                         // set the scene
+                         stage.setScene(scene);
+
+                         stage.show();
+
+                     }
+                    /* TablePosition pos = itemTable.getSelectionModel().getSelectedCells().get(0);
+                     int row = pos.getRow();
+                     // Item here is the table view type:
+                     Task item = itemTable.getItems().get(row);
+
+                     TableColumn col = pos.getTableColumn();
+                     // this gives the value in the selected cell:
+                     String data = (String) col.getCellObservableValue(item).getValue();
+
+                     */
+                 }
+                 catch (Exception ex) {
+                     ex.printStackTrace();
+                 }
+             }
+
+
+    });
     }
     @FXML
     public void editDescription()
@@ -312,12 +398,4 @@ public class ListController implements Initializable
         });
     }
 
-
-
-
-
-    public void sortItems(SortEvent<TableView> tableViewSortEvent)
-    {
-
-    }
 }
