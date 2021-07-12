@@ -26,9 +26,7 @@ model: ListModel
 
 class ListModel{
 +public addList();
-+ public removeList();
-+ public editTitle();
-+toString();
++public toString();
 }
 
 class ListManager
@@ -54,10 +52,8 @@ ListManager*-- Task
 
 class ManageFiles
 {
-+public importList(): String
-+public importMultipleLists(): String
-+public exportList(): String
-+public exportMultipleList: String
++public importList(File, ListManager): String
++public exportList(Task): String
 
 }
 class Task{
