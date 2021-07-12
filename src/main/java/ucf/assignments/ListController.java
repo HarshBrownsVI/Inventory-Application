@@ -136,8 +136,7 @@ public class ListController implements Initializable
             }
 
         }));
-        BooleanStringConverter b = new BooleanStringConverter();
-        completed.setCellFactory(TextFieldTableCell.forTableColumn(b));
+        completed.setCellFactory(TextFieldTableCell.forTableColumn());
 
     }
 
@@ -242,7 +241,9 @@ public class ListController implements Initializable
         // initialize the file chooser to open a new window showing a new stage
         // if the file is not null
         // if(file != null)
+          // set the items and columns to read the data in the table
          // call the importList function from the ManageFiles class to import the list
+         // create a new scene
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("TXT", "*.txt"));
         Parent root = FXMLLoader.load(getClass().getResource("Item.fxml"));
         Scene scene = new Scene(new Group());
@@ -269,74 +270,7 @@ public class ListController implements Initializable
                         for(int i = 0; i < manager.getList().size();i++)
                             System.out.println(manager.getList().get(i).getDescription());
                         Scene scene = new Scene(root);
-                        //stage.setScene(scene);
-                       // stage.show();
-
-
-                    }
-
-                    /*
-                    final VBox vbox = new VBox();
-                    vbox.setSpacing(5);
-                    vbox.setPadding(new Insets(10, 0, 0, 10));
-                        ((Group) scene.getRoot()).getChildren().addAll(vbox);
-                        vbox.getChildren().addAll(itemTable);
-                        files.importList(selectedFile, manager);
-                        itemTable.setItems(manager.getList());
-                        //itemTable.getColumns().addAll(descriptionCol, dateCol, completed);
-
-                        descriptionBox = new TextField();
-                        descriptionBox.setPromptText("Description");
-                        descriptionBox.setMaxWidth(descriptionCol.getPrefWidth());
-                        dueDate = new DatePicker();
-                        dueDate.setPromptText("Due Date");
-                        isCompleted = new CheckBox();
-
-
-
-                        addButton = new Button("Add");
-                        addButton.setOnAction(new EventHandler<ActionEvent>() {
-                                                  @Override
-                                                  public void handle(ActionEvent e) {
-                                                      if(event.getSource() == addButton) {
-                                                          addItemClicked(e);
-                                                      }
-                                                  }
-                                              });
-
-                        deleteButton = new Button("Delete");
-                        addButton.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent e) {
-                                if(event.getSource() == deleteButton) {
-                                    deleteItemClicked(e);
-                                }
-                            }
-                        });
-
-                        listDropdown = new ComboBox<String>();
-                        listDropdown.setPromptText("Select which items you want to display");
-                        listDropdown.setOnAction(new EventHandler<ActionEvent>() {
-                                                     @Override
-                                                     public void handle(ActionEvent e) {
-                                                         if(event.getSource() == listDropdown) {
-                                                             listDropdownClicked(e);
-                                                         }
-                                                     }
-                                               });
-
-
-                        exportList = new Button("Export List");
-                        exportList.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent e) {
-                                if(event.getSource() == exportList) {
-                                    exportListClicked(e);
-                                }
-                            }
-                        });
-
-                        */
+ 
                         stage.setScene(scene);
                         stage.show();
 
@@ -435,13 +369,13 @@ public class ListController implements Initializable
     }
 
 
-    @FXML
+   @FXML
     public void editCompleted()
     {
         // create an on edit commit action with an event handler
         // create a new task that gets the row value
         // call the setIsCompleted function to overwrite the old value with the new one
-       completed.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Task, Boolean>>() {
+        completed.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Task, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent event)
             {
@@ -450,6 +384,5 @@ public class ListController implements Initializable
 
             }
         });
-    }
 
 }
