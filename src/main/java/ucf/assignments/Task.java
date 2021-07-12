@@ -1,8 +1,8 @@
+/*
+ *  UCF COP3330 Summer 2021 Assignment 4 Solution
+ *  Copyright 2021 Sriharsha Aitharaju
+ */
 package ucf.assignments;
-
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.scene.control.CheckBox;
 
 import java.time.LocalDate;
 
@@ -14,9 +14,9 @@ public class Task
     LocalDate dueDate;
     // create a boolean variable to store whether the task is completed or not
     // is completed or not
-    CheckBox isCompleted;
+    boolean isCompleted;
 
-    public Task(String description, LocalDate dueDate, CheckBox isCompleted)
+    public Task(String description, LocalDate dueDate, boolean isCompleted)
     {
         // set the description parameter equal to the description field
         this.description = description;
@@ -46,9 +46,11 @@ public class Task
         // return the date field
             return dueDate;
     }
-    public boolean getIsCompleted()
+    public String getIsCompleted()
     {
-         return isCompleted.isSelected();
+        if(isCompleted)
+            return "yes";
+        return "no";
     }
     public void setIsCompleted(boolean completed)
     {
@@ -56,7 +58,7 @@ public class Task
         this.isCompleted = isCompleted;
     }
     public String toString(){
-        return description + " " + dueDate;
+        return description + "," + dueDate + "," + isCompleted;
     }
 
 

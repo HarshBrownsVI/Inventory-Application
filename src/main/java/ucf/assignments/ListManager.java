@@ -5,6 +5,7 @@
 
 package ucf.assignments;
 
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -42,7 +43,8 @@ public class ListManager {
     public ObservableList<Task> incomplete = FXCollections.observableArrayList();
 
 
-    public ListManager() {
+    public ListManager()
+    {
 
     }
 
@@ -60,6 +62,12 @@ public class ListManager {
         this.listName = listName;
     }
 
+    public ObservableList<Task> getList()
+    {
+        return list;
+    }
+
+    @FXML
     public ObservableList<Task> addItem(Task task) {
         // add the task parameter to the list
         // return the list
@@ -67,6 +75,7 @@ public class ListManager {
         return list;
     }
 
+    @FXML
     public ObservableList<Task> deleteItem(Task task) {
         // remove the task parameter from the list
         // return the list
@@ -74,6 +83,7 @@ public class ListManager {
         return list;
     }
 
+    @FXML
     public void editDescription(String des) {
         // create a new string that gets the selected value by the user
         // use the function setDescription() from the Task class to set it to the new value
@@ -82,18 +92,17 @@ public class ListManager {
 
     }
 
-    public DatePicker editDueDate() {
-        // create a new DatePicker that gets the selected value by the user
-        // use the function setDueDate() from the Task class to set it to the new value
-        // using getNewValue() from the table column
-        return new DatePicker();
+    @FXML
+    public void editDueDate(LocalDate date) {
+        // set the parameter due date equal to the class field due date
+        dueDate = date;
     }
 
-    public boolean editIsCompleted() {
-        // create a new CheckBox that gets the selected value by the user
-        // use the function setIsCompleted from the Task class to set it to the new value
-        // using getNewValue() from the table column
-        return true;
+    @FXML
+    public void editIsCompleted(CheckBox complete) {
+        // set the parameter complete  equal to the class field isCompleted
+
+        isCompleted = complete;
     }
 
     @FXML
@@ -116,7 +125,7 @@ public class ListManager {
         completed.clear();
         int count = 0;
         for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getIsCompleted() == true) {
+            if (list.get(i).getIsCompleted() == "yes") {
                 completed.add(count, list.get(i));
                 count++;
             }
@@ -133,7 +142,7 @@ public class ListManager {
         incomplete.clear();
         int count = 0;
         for (int i = 0; i < list.size(); i++) {
-            if (!list.get(i).getIsCompleted()) {
+            if (list.get(i).getIsCompleted() =="no") {
                 incomplete.add(count, list.get(i));
                 count++;
             }

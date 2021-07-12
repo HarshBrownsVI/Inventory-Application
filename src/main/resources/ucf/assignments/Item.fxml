@@ -12,7 +12,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ucf.assignments.ListController">
    <children>
-      <TableView fx:id="itemTable" editable="true" layoutX="-5.0" layoutY="86.0" onSort="#sortItems" prefHeight="237.0" prefWidth="607.0">
+      <TableView fx:id="itemTable" editable="true" layoutX="-5.0" layoutY="86.0" prefHeight="237.0" prefWidth="607.0">
          <columns>
             <TableColumn fx:id="descriptionCol" onEditCommit="#editDescription" prefWidth="308.0" text="Description" />
             <TableColumn fx:id="dateCol" minWidth="0.0" onEditCommit="#editDueDate" prefWidth="146.5" text="Due Date" />
@@ -26,5 +26,6 @@
       <Button fx:id="deleteItemButton" layoutX="515.0" layoutY="336.0" mnemonicParsing="false" onAction="#deleteItemClicked" text="Delete" />
       <ComboBox fx:id="listDropdown" layoutX="170.0" layoutY="39.0" onAction="#listDropdownClicked" prefHeight="25.0" prefWidth="257.0" promptText="Select which items you want to display" />
       <ButtonBar layoutX="-57.0" layoutY="51.0" prefHeight="40.0" prefWidth="200.0" />
+      <Button fx:id="exportList" layoutX="504.0" layoutY="39.0" mnemonicParsing="false" onAction="#exportListClicked" text="Export List" />
    </children>
 </AnchorPane>

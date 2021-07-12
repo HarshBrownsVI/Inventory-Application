@@ -10,9 +10,12 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -20,6 +23,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -31,10 +35,7 @@ import org.w3c.dom.Text;
 
 
 import java.beans.SimpleBeanInfo;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,17 +50,18 @@ import java.util.stream.Collectors;
 
 public class ListController implements Initializable
 {
+    // create a new combo box for the options, tableview, and table columns
     @FXML
     public ComboBox<String> listDropdown = new ComboBox<String>();
     @FXML
     public TableView<Task> itemTable = new TableView<>();
 
     @FXML
-    private TableColumn descriptionCol = new TableColumn();
+    private TableColumn<Task, String> descriptionCol = new TableColumn("Description");
     @FXML
-    private TableColumn dateCol = new TableColumn();
+    private TableColumn<Task, LocalDate> dateCol = new TableColumn<Task, LocalDate>("Due Date");
     @FXML
-    private TableColumn completed = new TableColumn();
+    private TableColumn<Task, Boolean> completed = new TableColumn("Completed?");
 
     // create add button, delete button, edit button
     @FXML private Button addButton;
@@ -71,10 +73,7 @@ public class ListController implements Initializable
     @FXML private Button exportList;
     @FXML private Button importList;
 
-    //@FXML private String title;
-    // create a list view of ListManagers
-    //@FXML
-   // ListView<ListManager> listNames = new ListView<>();
+
     @FXML
     private TextField listNameView;
     @FXML
@@ -86,7 +85,9 @@ public class ListController implements Initializable
     @FXML
     private CheckBox isCompleted;
 
+
     // create a new FileChooser
+    FileChooser chooser = new FileChooser();
 
     //create new buttons called open and cancel to use when loading list(s)
     // create an observable list
@@ -113,6 +114,7 @@ public class ListController implements Initializable
         dateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
         completed.setCellValueFactory(new PropertyValueFactory<>("isCompleted"));
         LocalDateStringConverter converter = new LocalDateStringConverter();
+        itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         descriptionCol.setCellFactory(TextFieldTableCell.forTableColumn());
         dateCol.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<LocalDate>() {
             @Override
@@ -134,7 +136,8 @@ public class ListController implements Initializable
             }
 
         }));
-        completed.setCellFactory(TextFieldTableCell.forTableColumn(new BooleanStringConverter()));
+        BooleanStringConverter b = new BooleanStringConverter();
+        completed.setCellFactory(TextFieldTableCell.forTableColumn(b));
 
     }
 
@@ -142,18 +145,10 @@ public class ListController implements Initializable
     public void addListClicked(javafx.event.ActionEvent event) throws IOException
     {
         //if the user clicks the + icon
-        // create a new list model
-        // set the list view to editable
-        // set the cell factory to be a text field in order to edit it
-        // navigate to the list view
-        // set prompt text to "Enter Title"
-        // if user presses enter on the keyboard after adding the title
-        // add the list using the list model object
+        //move the cursor to the textbox
         if(event.getSource() == addButton)
         {
             listNameView.requestFocus();
-            System.out.println("It works");
-
         }
     }
 
@@ -161,41 +156,23 @@ public class ListController implements Initializable
     @FXML
     public void Enter(javafx.event.ActionEvent event) throws IOException
     {
-        System.out.println("The");
-        manager.getListName();
+        //if the user clicks the enter button
+        // if the name of the list is given
+            // set the list name to the value in the text
+        // add the list as per the add list function in the model class
         if (event.getSource() == enter)
         {
-            System.out.println("ENTER pressed");
+
             if(listNameView != null)
             {
                 manager.setListName(listNameView.getText());
-                System.out.println("The name you entered is \"" + manager.getListName());
                 model.addList(p);
             }
-            else
-                System.out.println("List view is null");
         }
 
 
     }
 
-    @FXML
-    public void deleteListClicked(javafx.event.ActionEvent event)
-    {
-        // If the user clicks on one of the lists
-            // if the user clicks delete
-            // call the deleteList() function from the ListModel class
-    }
-    @FXML
-    public void editListClicked(javafx.event.ActionEvent event)
-    {
-        //if the user clicks the list edit button
-        // show the list view of titles
-        //set the editable ability to true for user to be able to edit the title
-        // use setCellFactory to provide the editable cells using forListView
-        // call the edit title method using the list manager object
-
-    }
 
     @FXML
     public void addItemClicked(ActionEvent event)
@@ -203,6 +180,9 @@ public class ListController implements Initializable
 
         // if the user clicks the add button
             //add item using add item function from the ListManager class
+        // update the description variable to be what is entered in the text box
+        // set the cell value factories of the 3 field to enable their properties
+        // add values to the item table using the addItem function in the ListManager clas
         if(event.getSource() == addItemButton)
         {
             description = descriptionBox.getText();
@@ -212,9 +192,7 @@ public class ListController implements Initializable
             dateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
             completed.setCellValueFactory(new PropertyValueFactory<>("isCompleted"));
             itemTable.setItems(manager.addItem(t));
-            System.out.println("Description:" + description);
-            System.out.println("Due Date:" + dueDate.getValue());
-            System.out.println("Completed:" + isCompleted.isSelected());
+
         }
     }
 
@@ -222,7 +200,8 @@ public class ListController implements Initializable
     public void deleteItemClicked(javafx.event.ActionEvent event)
     {
         // if the user clicks the delete button
-            //add item using delete item function from the ListManager class
+            //create a new Task which is the user input for the 3 values
+            // remove all of the selected items
         if(event.getSource() == deleteItemButton)
         {
             Task t = new Task(description, dueDate.getValue(), isCompleted.isSelected());
@@ -258,40 +237,116 @@ public class ListController implements Initializable
 
 
     @FXML
-    public void importListClicked(ActionEvent event) throws IOException {
+    public void importListClicked(ActionEvent event) throws IOException
+    {
         // initialize the file chooser to open a new window showing a new stage
         // if the file is not null
         // if(file != null)
          // call the importList function from the ManageFiles class to import the list
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("TXT", "*.txt"));
+        Parent root = FXMLLoader.load(getClass().getResource("Item.fxml"));
+        Scene scene = new Scene(new Group());
+        Stage stage = new Stage();
+        stage.setTitle(chooser.getTitle());
+        stage.setWidth(300);
+        stage.setHeight(500);
+        importList.setOnAction(new EventHandler()
+        {
+            @Override
+            public void handle(Event event)
+            {
+                try {
+                    File selectedFile = chooser.showOpenDialog(stage);
+                    System.out.println("File Name: " + selectedFile);
+                    if (selectedFile != null)
+                    {
 
-        /*
-        itemTable.setItems(data);
-        itemTable.getColumns().addAll(descriptionCol, dateCol, completed);
+                        itemTable.setEditable(true);
 
-        final VBox vbox = new VBox();
-        vbox.setSpacing(5);
-        vbox.setPadding(new Insets(10, 10, 10, 10));
+                       // files.importList(selectedFile, manager);
+                        itemTable.setItems(manager.getList());
+                        itemTable.getColumns().setAll(descriptionCol, dateCol, completed);
+                        for(int i = 0; i < manager.getList().size();i++)
+                            System.out.println(manager.getList().get(i).getDescription());
+                        Scene scene = new Scene(root);
+                        //stage.setScene(scene);
+                       // stage.show();
 
-        BorderPane borderPane = new BorderPane();
-        borderPane.setCenter(itemTable);
 
-        vbox.getChildren().addAll(borderPane);
+                    }
 
-        vbox.getChildren().add( new Label( "Select cells and press CTRL+C. Paste the data into Excel or Notepad"));
+                    /*
+                    final VBox vbox = new VBox();
+                    vbox.setSpacing(5);
+                    vbox.setPadding(new Insets(10, 0, 0, 10));
+                        ((Group) scene.getRoot()).getChildren().addAll(vbox);
+                        vbox.getChildren().addAll(itemTable);
+                        files.importList(selectedFile, manager);
+                        itemTable.setItems(manager.getList());
+                        //itemTable.getColumns().addAll(descriptionCol, dateCol, completed);
 
-        Scene scene = new Scene(vbox);
+                        descriptionBox = new TextField();
+                        descriptionBox.setPromptText("Description");
+                        descriptionBox.setMaxWidth(descriptionCol.getPrefWidth());
+                        dueDate = new DatePicker();
+                        dueDate.setPromptText("Due Date");
+                        isCompleted = new CheckBox();
 
-        stage.setScene(scene);
-        stage.show();
 
-        // enable multi-selection
-        itemTable.getSelectionModel().setCellSelectionEnabled(true);
-        itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        // enable copy/paste
-        TableUtils.installCopyPasteHandler(itemTable);
+                        addButton = new Button("Add");
+                        addButton.setOnAction(new EventHandler<ActionEvent>() {
+                                                  @Override
+                                                  public void handle(ActionEvent e) {
+                                                      if(event.getSource() == addButton) {
+                                                          addItemClicked(e);
+                                                      }
+                                                  }
+                                              });
 
-         */
+                        deleteButton = new Button("Delete");
+                        addButton.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent e) {
+                                if(event.getSource() == deleteButton) {
+                                    deleteItemClicked(e);
+                                }
+                            }
+                        });
+
+                        listDropdown = new ComboBox<String>();
+                        listDropdown.setPromptText("Select which items you want to display");
+                        listDropdown.setOnAction(new EventHandler<ActionEvent>() {
+                                                     @Override
+                                                     public void handle(ActionEvent e) {
+                                                         if(event.getSource() == listDropdown) {
+                                                             listDropdownClicked(e);
+                                                         }
+                                                     }
+                                               });
+
+
+                        exportList = new Button("Export List");
+                        exportList.setOnAction(new EventHandler<ActionEvent>() {
+                            @Override
+                            public void handle(ActionEvent e) {
+                                if(event.getSource() == exportList) {
+                                    exportListClicked(e);
+                                }
+                            }
+                        });
+
+                        */
+                        stage.setScene(scene);
+                        stage.show();
+
+                    }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 
@@ -299,53 +354,43 @@ public class ListController implements Initializable
     @FXML
     public void exportListClicked(ActionEvent actionEvent)
     {
-        // if the user clicks on one of the lists
-            // if the user clicks export
-                // call the exportList() function from the ManageFiles class
-        // else if the user clicks on the Ctrl key and selects multiple lists
-            // if the user clicks export
-                // call the exportMultipleLists() from the ManageFiles class
+        // create a new stage
+        // create an extension to display on the screen for the .txt file
+        // create a try catch
+        // if the user clicks on the export list button
+            // open up a dialog window to save a txt file
+            // if the file is not null
+                // get the filName that the user saves it as
+                // create a new filewriter
+                //create a for loop to go through the entire table and call the exportList function
+                // close the writer
+        // catch the exception and printStackTrace
+
          Stage stage = new Stage();
-         exportList.setOnAction(new EventHandler() {
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("TXT", "*.txt"));
+
+        exportList.setOnAction(new EventHandler() {
 
              @Override
-             public void handle(Event event) {
+             public void handle(Event event)
+             {
                  try {
-                     FileChooser chooser = new FileChooser();
                      File file = chooser.showSaveDialog(stage);
-                     FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file(*.txt)" , " *.txt");
-                     chooser.getExtensionFilters().add(extFilter);
 
                      if(file != null)
                      {
-                         String fileName = file.getName();
-                         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1, file.getName().length());
+                         File fileName = file.getAbsoluteFile();
+                         FileWriter writer = new FileWriter(fileName);
 
-                         System.out.println(">> fileExtension" + fileExtension);
-                         VBox vbox = new VBox(30);
+                         for (Task t : itemTable.getItems())
+                         {
+                               writer.append(files.exportList(t));
+                         }
 
-                         // set Alignment
-                         vbox.setAlignment(Pos.CENTER);
-
-                         // create a scene
-                         Scene scene = new Scene(vbox, 800, 500);
-
-                         // set the scene
-                         stage.setScene(scene);
-
-                         stage.show();
+                         writer.flush();
+                         writer.close();
 
                      }
-                    /* TablePosition pos = itemTable.getSelectionModel().getSelectedCells().get(0);
-                     int row = pos.getRow();
-                     // Item here is the table view type:
-                     Task item = itemTable.getItems().get(row);
-
-                     TableColumn col = pos.getTableColumn();
-                     // this gives the value in the selected cell:
-                     String data = (String) col.getCellObservableValue(item).getValue();
-
-                     */
                  }
                  catch (Exception ex) {
                      ex.printStackTrace();
@@ -358,12 +403,15 @@ public class ListController implements Initializable
     @FXML
     public void editDescription()
     {
+        // create an on edit commit action with an event handler
+            // create a new task that gets the row value
+            // call the editDescription to overwrite the old value with the new one
         descriptionCol.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Task, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent event)
             {
                 Task t = (Task) event.getRowValue();
-                t.setDescription((String) event.getNewValue());
+                manager.editDescription((String) event.getNewValue());
 
             }
         });
@@ -372,7 +420,10 @@ public class ListController implements Initializable
     @FXML
     public void editDueDate()
     {
-        descriptionCol.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Task, LocalDate>>() {
+        // create an on edit commit action with an event handler
+            // create a new task that gets the row value
+            // call the editDueDate function to overwrite the old value with the new one
+        dateCol.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Task, LocalDate>>() {
             @Override
             public void handle(TableColumn.CellEditEvent event)
             {
@@ -387,7 +438,10 @@ public class ListController implements Initializable
     @FXML
     public void editCompleted()
     {
-        descriptionCol.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Task, CheckBox>>() {
+        // create an on edit commit action with an event handler
+        // create a new task that gets the row value
+        // call the setIsCompleted function to overwrite the old value with the new one
+       completed.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Task, Boolean>>() {
             @Override
             public void handle(TableColumn.CellEditEvent event)
             {

@@ -1,3 +1,7 @@
+/*
+ *  UCF COP3330 Summer 2021 Assignment 4 Solution
+ *  Copyright 2021 Sriharsha Aitharaju
+ */
 package ucf.assignments;
 
 import com.sun.javafx.stage.EmbeddedWindow;
@@ -22,56 +26,24 @@ import java.util.ArrayList;
 public class ListModel
 {
     private Object ObservableList;
-    //MANAGES A LIST OF LISTMANAGERS
+    // create a new textfield of the name of the list
     // create an observable list of of ListManager objects`
-
     @FXML
-    private TextField listNameView;
+    private TextField listNameView = new TextField();
     ListView<ListManager> listNames = new ListView<>();
-    // set the prompt text to prompt for the title of the list
+
     public void addList(Stage primary) throws IOException {
-        // Create a new Scene
-        // Create a new fxml loader
-        // Create new tableview for list
-        // Create columns w header names (Description, Due Date, Completed?)
-        // Create a new Text object called title
-        // set the title as the text object
-        // return title
+        // load the item.fxml file to load the table
+        // create new scene of the root
+        // set the title of the value in the textfield
+        // set the scene to the item.fxml and show the scene
         Parent root = FXMLLoader.load(getClass().getResource("Item.fxml"));
         Scene scene = new Scene(root, 600, 500);
-        //primary.setTitle(listNameView.getName());
+        primary.setTitle(listNameView.getText());
         primary.setScene(scene);
         //Displaying the stage
         primary.show();
 
-    }
-
-    public ObservableList deleteList()
-    {
-        //click on the list that you wish to delete
-        //remove the list from the observable list
-        //remove the list from the list view
-        //return the list title contents
-        return (javafx.collections.ObservableList) ObservableList;
-    }
-
-
-
-    public String editTitle()
-    {
-        // create a new String variable to hold the title
-        // intialize - use the getNewValue() method of the listview class to overwrite the previous value
-        // return the variable
-        return "";
-    }
-
-
-
-    public String toString()
-    {
-        // create a String that gets the title of the list
-        //return the String
-        return "";
     }
 
 
