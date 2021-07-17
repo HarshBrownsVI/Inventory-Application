@@ -24,8 +24,13 @@
       <DatePicker fx:id="dueDate" layoutX="183.0" layoutY="344.0" promptText="Due Date" />
       <Button fx:id="addItemButton" layoutX="515.0" layoutY="365.0" mnemonicParsing="false" onAction="#addItemClicked" text="Add" />
       <Button fx:id="deleteItemButton" layoutX="515.0" layoutY="336.0" mnemonicParsing="false" onAction="#deleteItemClicked" text="Delete" />
-      <ComboBox fx:id="listDropdown" layoutX="170.0" layoutY="39.0" onAction="#listDropdownClicked" prefHeight="25.0" prefWidth="257.0" promptText="Select which items you want to display" />
-      <ButtonBar layoutX="-57.0" layoutY="51.0" prefHeight="40.0" prefWidth="200.0" />
-      <Button fx:id="exportList" layoutX="504.0" layoutY="39.0" mnemonicParsing="false" onAction="#exportListClicked" text="Export List" />
+      <ComboBox fx:id="listDropdown" layoutX="173.0" layoutY="51.0" onAction="#listDropdownClicked" prefHeight="25.0" prefWidth="257.0" promptText="Select which items you want to display" />
+      <ButtonBar layoutX="-57.0" layoutY="51.0" prefHeight="40.0" prefWidth="200.0">
+         <buttons>
+            <Button fx:id="clearButton" mnemonicParsing="false" onAction="#clearAllItemsClicked" text="Clear All Items" />
+         </buttons></ButtonBar>
+      <Button fx:id="exportList" layoutX="505.0" layoutY="14.0" mnemonicParsing="false" onAction="#exportListClicked" text="Export List" />
+      <Button fx:id="importList" layoutX="26.0" layoutY="14.0" mnemonicParsing="false" onAction="#importListClicked" text="Import Existing List" />
+      <Button fx:id="helpButton" layoutX="514.0" layoutY="51.0" mnemonicParsing="false" onAction="#helpButtonClicked" text="HELP!!" />
    </children>
 </AnchorPane>
