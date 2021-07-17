@@ -1,4 +1,3 @@
-
 /*
  *  UCF COP3330 Summer 2021 Assignment 4 Solution
  *  Copyright 2021 Sriharsha Aitharaju
@@ -36,7 +35,7 @@ import javafx.util.converter.LocalDateStringConverter;
 import org.w3c.dom.Text;
 
 
-import javax.swing.event.ChangeListener;
+import javax.swing.*;
 import java.beans.SimpleBeanInfo;
 import java.io.*;
 import java.net.URL;
@@ -51,8 +50,7 @@ import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class ListController implements Initializable
-{
+public class ListController implements Initializable {
     // create a new combo box for the options, tableview, and table columns
     @FXML
     public ComboBox<String> listDropdown = new ComboBox<String>();
@@ -66,16 +64,21 @@ public class ListController implements Initializable
     @FXML
     private TableColumn<Task, String> completed = new TableColumn("Completed?");
 
-    // create add button, delete button, edit button
-    @FXML private Button addButton;
-    @FXML private Button deleteButton;
-    @FXML private Button editButton;
-    @FXML private Button enter;
-    @FXML private Button addItemButton;
-    @FXML private Button deleteItemButton;
-    @FXML private Button exportList;
-    @FXML private Button importList;
+    // create add button, delete button, edit button, clear button, import and export list
 
+
+    @FXML
+    private Button addItemButton;
+    @FXML
+    private Button deleteItemButton;
+    @FXML
+    private Button clearButton;
+    @FXML
+    private Button exportList;
+    @FXML
+    private Button importList;
+    @FXML
+    private Button helpButton;
 
     @FXML
     private TextField listNameView;
@@ -97,88 +100,46 @@ public class ListController implements Initializable
     // create a new list manager
     // create a new stage
     Stage p = new Stage();
-    //create a new list model
-    ListModel model = new ListModel();
     // create a new list manager
     ListManager manager = new ListManager();
     // create a new file manager
     ManageFiles files = new ManageFiles();
-    // create a new anchor pane for the error messages
-    @FXML
-    private AnchorPane anchorPane = new AnchorPane();
 
 
     @Override
-    public void initialize(URL url, ResourceBundle rb)
-    {
+    public void initialize(URL url, ResourceBundle rb) {
         ObservableList<String> choices = FXCollections.observableArrayList("All Items", "Completed Items", "Incomplete Items");
         listDropdown.setItems(choices);
         final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         itemTable.setEditable(true);
-        LocalDateStringConverter converter = new LocalDateStringConverter();
-        descriptionCol.setCellFactory(TextFieldTableCell.forTableColumn());
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        dateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
+        completed.setCellValueFactory(new PropertyValueFactory<>("isCompleted"));
+        LocalDateStringConverter converter = new LocalDateStringConverter();
+        itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        descriptionCol.setCellFactory(TextFieldTableCell.forTableColumn());
         dateCol.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<LocalDate>() {
             @Override
-            public String toString(LocalDate t)
-            {
-                if (t==null) {
-                    return "" ;
+            public String toString(LocalDate t) {
+                if (t == null) {
+                    return "";
                 } else {
                     return dateFormat.format(t);
                 }
             }
+
             @Override
             public LocalDate fromString(String string) {
                 try {
                     return LocalDate.parse(string, dateFormat);
                 } catch (DateTimeParseException exc) {
-                    return null ;
+                    return null;
                 }
             }
 
         }));
-        dateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
         completed.setCellFactory(TextFieldTableCell.forTableColumn());
-        completed.setCellValueFactory(new PropertyValueFactory<>("isCompleted"));
-
-        itemTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    }
-
-    @FXML
-    public void addListClicked(javafx.event.ActionEvent event) throws IOException
-    {
-        //if the user clicks the + icon
-        //move the cursor to the textbox
-        if(event.getSource() == addButton)
-        {
-            listNameView.requestFocus();
-        }
-    }
-
-
-    @FXML
-    public void Enter(javafx.event.ActionEvent event) throws IOException
-    {
-        //if the user clicks the enter button
-        // if the name of the list is given
-        // set the list name to the value in the text
-        // add the list as per the add list function in the model class
-        if (event.getSource() == enter) {
-
-            Parent root = null;
-            try {
-                root = FXMLLoader.load(getClass().getResource("Item.fxml"));
-            } catch (IOException e) {
-                e.printStackTrace();
-                if (listNameView != null) {
-                    //manager.setListName(listNameView.getText());
-                    p.setScene(root.getScene());
-                    p.setTitle(listNameView.getText());
-                    model.addList(p);
-                }
-            }
-        }
 
     }
 
@@ -186,11 +147,6 @@ public class ListController implements Initializable
     @FXML
     public void addItemClicked(ActionEvent event) throws IOException {
 
-        // if the user clicks the add button
-        //add item using add item function from the ListManager class
-        // update the description variable to be what is entered in the text box
-        // set the cell value factories of the 3 field to enable their properties
-        // add values to the item table using the addItem function in the ListManager class
         if(event.getSource() == addItemButton)
         {
             description = descriptionBox.getText();
@@ -212,6 +168,12 @@ public class ListController implements Initializable
                 alert.getDialogPane().setHeaderText("Invalid Item");
                 alert.showAndWait();
             }
+            else if(t.getDueDate() == null || t.getDueDate().equals(DateTimeFormatter.ofPattern("yyyy-mm-dd")))
+            {
+                alert.getDialogPane().setContentText("Invalid Due Date!! Must be in the format YYYY-MM-DD!!");
+                alert.getDialogPane().setHeaderText("Invalid Item");
+                alert.showAndWait();
+            }
             else {
                 itemTable.setItems(manager.addItem(t));
             }
@@ -219,8 +181,7 @@ public class ListController implements Initializable
     }
 
     @FXML
-    public void deleteItemClicked(javafx.event.ActionEvent event)
-    {
+    public void deleteItemClicked(javafx.event.ActionEvent event) {
         // if the user clicks the delete button
         //create a new Task which is the user input for the 3 values
         // remove all of the selected items
@@ -230,12 +191,32 @@ public class ListController implements Initializable
             itemTable.setItems(manager.deleteItem(t));
             itemTable.getItems().removeAll(itemTable.getSelectionModel().getSelectedItem());
         }
-
     }
 
     @FXML
-    public void listDropdownClicked(javafx.event.ActionEvent event)
+    public void clearAllItemsClicked(ActionEvent event)
     {
+        if(event.getSource() == clearButton)
+        {
+            manager.clearAllItems();
+        }
+    }
+
+    @FXML
+    public void helpButtonClicked(ActionEvent event) throws IOException {
+        if(event.getSource() == helpButton)
+        {
+            Parent root = FXMLLoader.load(getClass().getResource("HelpScreen.fxml"));
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.setTitle("Help Screen");
+            stage.show();
+        }
+    }
+
+    @FXML
+    public void listDropdownClicked(javafx.event.ActionEvent event) {
         // If you clicked the dropdown button
         // check each item in the list Dropdown
         // if the user selects all items
@@ -263,46 +244,42 @@ public class ListController implements Initializable
 
 
     @FXML
-    public void importListClicked(ActionEvent event) throws IOException
-    {
+    public void importListClicked(ActionEvent event) throws IOException {
         // initialize the file chooser to open a new window showing a new stage
         // if the file is not null
         // if(file != null)
+        // set the items and columns to read the data in the table
         // call the importList function from the ManageFiles class to import the list
+        // create a new scene
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("TXT", "*.txt"));
-        //Parent root = FXMLLoader.load(getClass().getResource("Item.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("Item.fxml"));
         Scene scene = new Scene(new Group());
         Stage stage = new Stage();
         stage.setTitle(chooser.getTitle());
         stage.setWidth(300);
         stage.setHeight(500);
-        importList.setOnAction(new EventHandler()
-        {
+        importList.setOnAction(new EventHandler() {
             @Override
-            public void handle(Event event)
-            {
-                try
-                {
+            public void handle(Event event) {
+                try {
                     File selectedFile = chooser.showOpenDialog(stage);
-                    ObservableList<Task> list = files.importList(selectedFile, manager);
                     System.out.println("File Name: " + selectedFile);
-                    if (selectedFile != null)
-                    {
-                        itemTable.setEditable(true);
-                        itemTable.setItems(list);
-                        itemTable.getColumns().setAll(descriptionCol, dateCol, completed);
-                        for(int i = 0; i < manager.getList().size();i++)
-                            System.out.println(manager.getList().get(i).getDescription());
-                        //stage.setScene(scene);
-                        // stage.show();
+                    if (selectedFile != null) {
 
+                        itemTable.setEditable(true);
+
+                        // files.importList(selectedFile, manager);
+                        itemTable.setItems(manager.getList());
+                        itemTable.getColumns().setAll(descriptionCol, dateCol, completed);
+                        for (int i = 0; i < manager.getList().size(); i++)
+                            System.out.println(manager.getList().get(i).getDescription());
+                        Scene scene = new Scene(root);
+
+                        stage.setScene(scene);
+                        stage.show();
 
                     }
-
-
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -310,10 +287,8 @@ public class ListController implements Initializable
     }
 
 
-
     @FXML
-    public void exportListClicked(ActionEvent actionEvent)
-    {
+    public void exportListClicked(ActionEvent actionEvent) {
         // create a new stage
         // create an extension to display on the screen for the .txt file
         // create a try catch
@@ -328,47 +303,44 @@ public class ListController implements Initializable
 
         Stage stage = new Stage();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("TXT", "*.txt"));
-        exportList.setOnAction(new EventHandler()
-        {
+
+        exportList.setOnAction(new EventHandler() {
+
             @Override
-            public void handle(Event event)
-            {
-                try
-                {
+            public void handle(Event event) {
+                try {
                     File file = chooser.showSaveDialog(stage);
 
-                    if(file != null)
-                    {
+                    if (file != null) {
                         File fileName = file.getAbsoluteFile();
                         FileWriter writer = new FileWriter(fileName);
 
-                        for (Task t : itemTable.getItems())
-                        {
+                        for (Task t : itemTable.getItems()) {
                             writer.append(files.exportList(t));
                         }
 
                         writer.flush();
                         writer.close();
+
                     }
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
-        });
 
+
+        });
     }
+
     @FXML
-    public void editDescription()
-    {
+    public void editDescription() {
         // create an on edit commit action with an event handler
         // create a new task that gets the row value
         // load the fxml file
         // create a try catch for the file
         // create a scene and an alert to display in error if an invalid field is entered
         // if the description is invalid
-            // display an error saying that it is invalid and make them reenter another description
+        // display an error saying that it is invalid and make them reenter another description
         //if it is valid, display the new value changed by the user
         Task t = itemTable.getSelectionModel().getSelectedItem();
         descriptionCol.setEditable(true);
@@ -396,9 +368,7 @@ public class ListController implements Initializable
                     System.out.println("New Value: " + newVal);
                     ((Task) event.getTableView().getItems().get(event.getTablePosition().getRow())).setDescription((String) event.getNewValue());
                 }
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -406,8 +376,7 @@ public class ListController implements Initializable
     }
 
     @FXML
-    public void editDueDate()
-    {
+    public void editDueDate() {
         // create an on edit commit action with an event handler
         // create a new task that gets the row value
         // load the fxml file
@@ -418,8 +387,7 @@ public class ListController implements Initializable
         //else if it is valid, display the new value changed by the user
         dateCol.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Task, LocalDate>>() {
             @Override
-            public void handle(TableColumn.CellEditEvent<Task, LocalDate> event)
-            {
+            public void handle(TableColumn.CellEditEvent<Task, LocalDate> event) {
                 Task t = event.getRowValue();
                 LocalDate newVal = event.getNewValue();
 
@@ -442,15 +410,12 @@ public class ListController implements Initializable
                         System.out.println("New Value: " + newVal);
                         (event.getTableView().getItems().get(event.getTablePosition().getRow())).setDueDate(event.getNewValue());
                     }
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
     }
-
 
 
     @FXML
@@ -465,7 +430,8 @@ public class ListController implements Initializable
         // display an error saying that it is invalid and make them reenter the correct value of whether it is completed or not
         //else if it is valid, display the new value changed by the user
         completed.setCellFactory(TextFieldTableCell.forTableColumn());
-        completed.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Task, String>>() {
+        completed.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Task, String>>()
+        {
             @Override
             public void handle(TableColumn.CellEditEvent event)
             {
@@ -499,5 +465,4 @@ public class ListController implements Initializable
             }
         });
     }
-
 }
