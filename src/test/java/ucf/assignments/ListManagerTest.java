@@ -25,7 +25,6 @@ class ListManagerTest extends ListManager{
     @RepeatedTest(5)
     void addItem()
     {
-
         // create a String variable to store a name intended to compare the actual with
         // call the addItem() method and store the description of the item in
         // use assertEquals to compare the two names
@@ -134,6 +133,13 @@ class ListManagerTest extends ListManager{
         exp.remove(t2);
         manager.deleteItem(t2);
         assertEquals(exp, actual);
+    }
+
+
+    @Test
+    void testSorted()
+    {
+        // tableview already sorts the items in my application
     }
 
 
