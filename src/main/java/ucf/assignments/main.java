@@ -30,7 +30,7 @@ public class main extends Application
     {
         try
         {
-            Parent root = FXMLLoader.load(getClass().getResource("List.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("Item.fxml"));
             Scene scene = new Scene(root);
             primaryStage.setScene(scene);
 
