@@ -48,7 +48,8 @@ public class ListManager {
 
     }
 
-    public ListManager(String listName) {
+    public ListManager(String listName)
+    {
         // set this title equal to the parameter title
         this.listName = listName;
     }
@@ -68,19 +69,28 @@ public class ListManager {
     }
 
     @FXML
-    public ObservableList<Task> addItem(Task task) {
+    public ObservableList<Task> addItem(Task task)
+    {
         // add the task parameter to the list
         // return the list
+        //if(task.getDescription().length() < 1 || task.getDescription().length() > 256 || LocalDate.parse(task.getDueDate().toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd")) )
         list.add(task);
         return list;
     }
 
     @FXML
-    public ObservableList<Task> deleteItem(Task task) {
+    public ObservableList<Task> deleteItem(Task task)
+    {
         // remove the task parameter from the list
         // return the list
         list.remove(task);
         return list;
+    }
+
+    @FXML
+    public void clearAllItems()
+    {
+        list.clear();
     }
 
     @FXML
