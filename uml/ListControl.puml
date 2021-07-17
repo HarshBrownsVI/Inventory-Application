@@ -8,61 +8,83 @@ start()
 
 class ListController
 {
-model: ListModel
++ ComboBox<String> listDropdown>;
++ TableView<Task> itemTable;
+- TableColumn<Task, String> descriptionCol
+- TableColumn<Task, LocalDate> dateCol
+- TableColumn<Task, String> completed
+- Button addButton;
+- Button deleteButton;
+- Button editButton;
+- Button enter;
+- Button addItemButton;
+- Button deleteItemButton;
+- Button exportList;
+- Button importList;
+- Button clearButton;
+- Button helpButton;
+- TextField listNameView;
+- TextField descriptionBox;
+- String description;
+- DatePicker dueDate;
+- CheckBox isCompleted;
++ FileChooser chooser;
++ Stage p;
++ ListManager manager
++ ManageFiles files;
+- AnchorPane anchorPane;
++ DateTimeFormatter dateFormat;
 // GUI: Event Handlers
-+ public addListClicked()
-+ public deleteListClicked()
-+ public editListClicked()
-+ public addItemClicked()
-+ public deleteItemClicked()
-+ public listDropdownClicked()
-+ public importListClicked()
-+ public exportListClicked()
-+ public editDescriptionClicked()
-+ public editDueDateClicked()
-+ public editCompletedClicked()
-
-}
-
-class ListModel{
-+public addList();
-+public toString();
++  initialize(URL url, ResourceBundle rb): void;
++  helpButtonClicked(ActionEvent event): void;
++  addItemClicked(ActionEvent event): void;
++  deleteItemClicked(ActionEvent event): void;
++  clearAllItemsClicked(ActionEvent event): void;
++  editDescription(): void;
++  editDueDate(): void;
++  editCompleted(): void;
++  listDropdownClicked(ActionEvent event): void;
++  importList(ActionEvent event): void;
++  exportListClicked(ActionEvent event): void
 }
 
 class ListManager
 {
- - list: ObservableList<Task>
- - view: ListView<>
-+ public addItem();
-+ public deleteItem();
-+public modifyItem();
-+public editDescription();
-+public editDueDate();
-+public markComplete();
-+public addAll();
-+public addCompleted();
-+public addIncomplete();
+- String description;
+- LocalDate dueDate;
+- CheckBox isCompleted;
++ ObservableList<Task> list;
++ ObservableList<Task> completed;
++ ObservableList<Task> incomplete;
++ addItem();
++ deleteItem();
++ modifyItem();
++ editDescription();
++ editDueDate();
++ markComplete();
++ addAll();
++ ObservableList<Task> addCompleted();
++ ObservableList<Task> addIncomplete();
 
 
 }
-ListAPP-- ListModel
-ListController -- ListModel
 ListModel -- ListManager
 ListManager*-- Task
+ListController -- ManageFiles
 
 class ManageFiles
 {
-+public importList(File, ListManager): String
-+public exportList(Task): String
++ importList(File, ListManager): String
++ exportList(Task): String
 
 }
 class Task{
-    -description: String
+    -description: SimpleStringProperty
     -dueDate: Date
     -isCompleted: Boolean
 
-    +public setDescription(String): void
-    +public setDueDate(String): void
+    +setDescription(String): void
+    +setDueDate(String): void
     +getDescription(): String
     +getDueDate(): String
     +getIsCompleted(): Boolean
