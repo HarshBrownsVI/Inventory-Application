@@ -22,7 +22,7 @@ class ManageFilesTest {
     void importList() throws IOException {
         // create a new manager
         // fill up manager with tasks
-        // create a second manager and a managefles
+        // create a second manager and a manage files
         // create a new file to compare it to
         // compare the contents of both managers
         ListManager manager = new ListManager();
