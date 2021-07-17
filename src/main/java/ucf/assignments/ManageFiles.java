@@ -29,7 +29,7 @@ public class ManageFiles
     public ObservableList<Task> list = FXCollections.observableArrayList();
     // Create a new file chooser
 
-    public void importList(File filename, ListManager manager) throws IOException
+    public ObservableList<Task> importList(File filename, ListManager manager) throws IOException
     {
         // Create a new ObservableList of Tasks
         // create a try catch
@@ -43,14 +43,20 @@ public class ManageFiles
         // use the method printStackTrace() to print an error message
         // return the list
         //ObservableList<Task> tasks = FXCollections.observableArrayList();
+        manager.getList().clear();
         try (BufferedReader br = new BufferedReader(new FileReader(filename)))
+
         {
+            boolean b;
             String line;
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null)
+            {
                 // process the line
                 System.out.println(line);
                 String data[] = line.split(",");
-                Task t = new Task(data[0], LocalDate.parse(data[1]), Boolean.parseBoolean(data[2]));
+                boolean checked = false;
+                checked = data[2].equals("yes") ? true : false;
+                Task t = new Task(data[0], LocalDate.parse(data[1]), checked);
                manager.addItem(t);
             }
 
@@ -61,24 +67,9 @@ public class ManageFiles
         }
 
 
-        //return tasks;
+        return manager.getList();
         }
-        /*List<Name> names = new ArrayList<Name>();
-        BufferedReader read = new BufferedReader(new FileReader(file));
-        try {
-            String line;
-            while ((line = read.readLine()) != null) {
-                String[] firstandlast = line.split(", ");
-                if (firstandlast != null && firstandlast.length > 1)
-                    names.add(new Name(firstandlast[0], firstandlast[1]));
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-         */
-
-
+       
 
     public String exportList(Task t)
     {
