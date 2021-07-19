@@ -40,6 +40,11 @@ public class Task
         // set the due date equal to the due date field in the class
         this.dueDate = dueDate;
     }
+     public void setIsCompleted(boolean completed)
+    {
+        // set the completed parameter equal to the isCompleted field
+        this.isCompleted = isCompleted;
+    }
 
     public String getDescription(){
         // return the description field
